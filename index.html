@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IELTS Practice Centre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1C2B4A;
+    --ink-soft:#33456b;
+    --parchment:#F3EEDE;
+    --parchment-dark:#E7DFC6;
+    --parchment-line:#d8cfae;
+    --red:#AE3A3A;
+    --green:#3F6B4F;
+    --gold:#B8923F;
+    --charcoal:#312F28;
+    --paper-shadow: 0 2px 0 rgba(28,43,74,0.06), 0 12px 24px -12px rgba(28,43,74,0.25);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      repeating-linear-gradient(180deg, transparent 0px, transparent 27px, var(--parchment-line) 28px),
+      var(--parchment);
+    color:var(--charcoal);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+  }
+  .hidden{display:none !important;}
+  button{font-family:inherit;cursor:pointer;}
+  button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible{
+    outline:2.5px solid var(--ink); outline-offset:2px;
+  }
+  input, textarea, select{font-family:inherit;}
+
+  #loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+  .exam-card{
+    background:#FBF8EE;border:1px solid var(--parchment-line);box-shadow:var(--paper-shadow);
+    width:100%;max-width:420px;padding:36px 32px 30px;position:relative;
+  }
+  .exam-card::before{
+    content:"";position:absolute;top:0;left:24px;right:24px;height:4px;
+    background:repeating-linear-gradient(90deg, var(--ink) 0 10px, transparent 10px 20px);opacity:.18;
+  }
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.16em;color:var(--ink-soft);text-transform:uppercase;display:block;margin-bottom:6px;}
+  .exam-card h1{font-family:'Newsreader',serif;font-weight:600;font-size:28px;margin:0 0 22px;color:var(--ink);}
+  .tab-switch{display:flex;border:1px solid var(--ink);margin-bottom:20px;}
+  .tab-switch button{flex:1;background:transparent;border:none;padding:10px 0;font-size:13px;font-family:'IBM Plex Mono',monospace;letter-spacing:.05em;color:var(--ink-soft);text-transform:uppercase;}
+  .tab-switch button.active{background:var(--ink);color:var(--parchment);}
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:11px;font-family:'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px;}
+  .field input{width:100%;padding:10px 12px;border:1px solid var(--ink);background:#fff;font-size:15px;color:var(--charcoal);}
+  .btn-primary{width:100%;background:var(--ink);color:var(--parchment);border:none;padding:12px 0;font-size:14px;letter-spacing:.06em;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;margin-top:6px;}
+  .btn-primary:hover{background:var(--ink-soft);}
+  .btn-primary:disabled{opacity:.5;cursor:default;}
+  .error-note{color:var(--red);font-size:13px;margin-top:14px;min-height:18px;font-family:'IBM Plex Mono',monospace;}
+  .note-small{font-size:12px;color:var(--ink-soft);margin-top:18px;line-height:1.5;}
+
+  #appScreen{min-height:100vh;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:2px solid var(--ink);background:#FBF8EE;flex-wrap:wrap;gap:10px;}
+  .brand{font-family:'Newsreader',serif;font-weight:600;font-size:20px;color:var(--ink);}
+  .brand span{color:var(--red);}
+  .candidate-info{display:flex;align-items:center;gap:14px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);}
+  .candidate-info b{color:var(--ink);}
+  #logoutBtn{background:transparent;border:1px solid var(--ink);color:var(--ink);padding:6px 12px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.05em;text-transform:uppercase;}
+  #logoutBtn:hover{background:var(--ink);color:var(--parchment);}
+
+  .tabs{display:flex;gap:2px;padding:0 28px;margin-top:18px;flex-wrap:wrap;}
+  .tab-btn{background:var(--parchment-dark);border:1px solid var(--parchment-line);border-bottom:none;padding:10px 20px;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);}
+  .tab-btn.active{background:#FBF8EE;color:var(--ink);border-color:var(--ink);font-weight:600;}
+
+  main{max-width:920px;margin:0 auto;padding:26px 20px 70px;}
+  .panel{display:none;}
+  .panel.active{display:block;}
+
+  .paper{background:#FBF8EE;border:1px solid var(--parchment-line);box-shadow:var(--paper-shadow);padding:28px 26px;margin-bottom:24px;}
+  .paper h2{font-family:'Newsreader',serif;font-size:22px;margin:0 0 4px;color:var(--ink);font-weight:600;}
+  .paper .sub{font-size:13px;color:var(--ink-soft);margin-bottom:20px;}
+
+  .pill-select{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+  .pill-select button{border:1px solid var(--ink);background:transparent;padding:8px 16px;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.04em;color:var(--ink);}
+  .pill-select button.active{background:var(--ink);color:var(--parchment);}
+
+  .field label.big{font-size:12px;}
+  textarea{width:100%;border:1px solid var(--ink);background:#fff;padding:12px;font-size:15px;line-height:1.6;color:var(--charcoal);resize:vertical;min-height:100px;}
+  .essay-box{min-height:220px;}
+  .meta-row{display:flex;justify-content:space-between;align-items:center;margin-top:8px;flex-wrap:wrap;gap:6px;}
+  .word-count{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);}
+  .word-count.short{color:var(--red);}
+  .word-count.ok{color:var(--green);}
+
+  .evaluate-btn{margin-top:18px;background:var(--red);color:#fff;border:none;padding:13px 26px;font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.06em;text-transform:uppercase;}
+  .evaluate-btn:hover{background:#8f2e2e;}
+  .evaluate-btn:disabled{opacity:.5;cursor:default;}
+
+  .mic-row{display:flex;align-items:center;gap:14px;margin-bottom:16px;flex-wrap:wrap;}
+  .mic-btn{display:flex;align-items:center;gap:8px;border:1px solid var(--ink);background:#fff;padding:10px 18px;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.04em;color:var(--ink);}
+  .mic-btn.recording{background:var(--red);color:#fff;border-color:var(--red);}
+  .mic-dot{width:9px;height:9px;border-radius:50%;background:var(--red);display:inline-block;}
+  .mic-btn.recording .mic-dot{background:#fff;animation:pulse 1.1s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.25;}}
+  .mic-status{font-size:12px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;}
+
+  .loading-row{display:flex;align-items:center;gap:10px;margin-top:16px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);}
+  .spinner{width:14px;height:14px;border:2px solid var(--parchment-line);border-top-color:var(--ink);border-radius:50%;animation:spin .8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .results{margin-top:28px;border-top:2px dashed var(--parchment-line);padding-top:26px;}
+  .result-head{display:flex;align-items:center;gap:28px;flex-wrap:wrap;margin-bottom:22px;}
+  .band-stamp{
+    width:118px;height:118px;border-radius:50%;flex-shrink:0;border:3px double var(--red);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    transform:rotate(-7deg);color:var(--red);
+    background:radial-gradient(circle at 35% 30%, rgba(174,58,58,0.06), transparent 70%);opacity:.92;
+  }
+  .band-stamp .label{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;}
+  .band-stamp .num{font-family:'IBM Plex Mono',monospace;font-size:34px;font-weight:600;line-height:1;margin:2px 0;}
+  .band-stamp .task{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;}
+  @keyframes stampIn{0%{opacity:0;transform:rotate(-7deg) scale(1.9);}60%{opacity:1;}100%{opacity:.92;transform:rotate(-7deg) scale(1);}}
+  .band-stamp.animate{animation:stampIn .5s ease-out;}
+  @media (prefers-reduced-motion: reduce){ .band-stamp.animate{animation:none;} }
+
+  .result-head-text h3{font-family:'Newsreader',serif;font-size:19px;margin:0 0 4px;color:var(--ink);}
+  .result-head-text p{margin:0;font-size:13px;color:var(--ink-soft);max-width:480px;}
+
+  .criteria-list{display:grid;gap:14px;margin-bottom:24px;}
+  .criterion{display:grid;grid-template-columns:170px 1fr 46px;gap:14px;align-items:center;}
+  .criterion .cname{font-size:12.5px;color:var(--ink);font-weight:600;}
+  .bar-track{height:7px;background:var(--parchment-dark);border:1px solid var(--parchment-line);position:relative;}
+  .bar-fill{height:100%;background:var(--ink);}
+  .criterion .cscore{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--ink);text-align:right;}
+  .criterion .ccomment{grid-column:1 / -1;font-size:13px;color:var(--charcoal);line-height:1.5;margin-top:-4px;padding-left:10px;border-left:2px solid var(--parchment-line);}
+
+  .feedback-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  @media (max-width:640px){ .feedback-grid{grid-template-columns:1fr;} .criterion{grid-template-columns:1fr;} .criterion .cscore{text-align:left;} }
+  .feedback-col h4{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin:0 0 10px;}
+  .feedback-col.strengths h4{color:var(--green);}
+  .feedback-col.improve h4{color:var(--red);}
+  .feedback-col ul{margin:0;padding-left:18px;}
+  .feedback-col li{font-size:13.5px;line-height:1.55;margin-bottom:7px;color:var(--charcoal);}
+  .caveat{margin-top:20px;font-size:12px;color:var(--ink-soft);background:var(--parchment-dark);border-left:3px solid var(--gold);padding:10px 14px;line-height:1.5;}
+
+  .error-box{margin-top:16px;padding:12px 14px;background:#f6e5e5;border-left:3px solid var(--red);color:var(--red);font-size:13px;}
+
+  .history{margin-top:6px;}
+  .history-item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--parchment-line);font-size:13px;color:var(--ink-soft);}
+  .history-item b{color:var(--ink);font-family:'IBM Plex Mono',monospace;}
+  .history-empty{font-size:13px;color:var(--ink-soft);font-style:italic;}
+
+  footer{text-align:center;padding:20px;font-size:11px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;}
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <div class="exam-card">
+    <span class="eyebrow">IELTS Practice Centre — Candidate Access</span>
+    <h1 id="formTitle">Sign In</h1>
+    <div class="tab-switch">
+      <button id="modeLoginBtn" class="active">Sign In</button>
+      <button id="modeRegisterBtn">Register</button>
+    </div>
+    <form id="authForm">
+      <div class="field">
+        <label for="usernameInput">Candidate name</label>
+        <input id="usernameInput" type="text" autocomplete="username" required maxlength="40">
+      </div>
+      <div class="field">
+        <label for="passwordInput">Password</label>
+        <input id="passwordInput" type="password" autocomplete="current-password" required maxlength="60">
+      </div>
+      <button type="submit" class="btn-primary" id="authSubmitBtn">Sign In</button>
+      <p class="error-note" id="authError"></p>
+    </form>
+    <p class="note-small">Accounts are stored server-side in Cloudflare KV. Still — this is a practice tool, not a bank; don't reuse a sensitive password.</p>
+  </div>
+</div>
+
+<div id="appScreen" class="hidden">
+  <header class="topbar">
+    <div class="brand">IELTS <span>Practice</span> Centre</div>
+    <div class="candidate-info">Candidate: <b id="userDisplay"></b><button id="logoutBtn">Log out</button></div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="writing">Writing Evaluator</button>
+    <button class="tab-btn" data-tab="speaking">Speaking Evaluator</button>
+  </nav>
+
+  <main>
+    <section id="writingPanel" class="panel active">
+      <div class="paper">
+        <h2>Writing Evaluator</h2>
+        <p class="sub">Choose which task you're submitting, paste your response, and get IELTS-style band feedback.</p>
+
+        <div class="pill-select" id="taskSelect">
+          <button data-task="1" class="active">Task 1 (Report)</button>
+          <button data-task="2">Task 2 (Essay)</button>
+        </div>
+
+        <div class="field">
+          <label class="big" for="writingPrompt">Task prompt / question (optional but improves accuracy)</label>
+          <textarea id="writingPrompt" placeholder="Paste the exact task wording here, e.g. 'The chart below shows...' or 'Some people believe...'" style="min-height:70px;"></textarea>
+        </div>
+
+        <div class="field">
+          <label class="big" for="essayText">Your response</label>
+          <textarea id="essayText" class="essay-box" placeholder="Write or paste your response here..."></textarea>
+          <div class="meta-row">
+            <span class="word-count" id="writingWordCount">0 words</span>
+            <span class="word-count" id="writingTarget">Target: 150+ words</span>
+          </div>
+        </div>
+
+        <button class="evaluate-btn" id="evaluateWritingBtn">Evaluate Writing</button>
+        <div class="loading-row hidden" id="writingLoading"><div class="spinner"></div> Marking your response…</div>
+        <div class="error-box hidden" id="writingError"></div>
+
+        <div class="results hidden" id="writingResults"></div>
+      </div>
+
+      <div class="paper">
+        <h2 style="font-size:16px;">Recent Writing Evaluations</h2>
+        <div class="history" id="writingHistory"><p class="history-empty">No evaluations yet.</p></div>
+      </div>
+    </section>
+
+    <section id="speakingPanel" class="panel">
+      <div class="paper">
+        <h2>Speaking Evaluator</h2>
+        <p class="sub">Record or type your spoken answer, then get band feedback across the four speaking criteria.</p>
+
+        <div class="pill-select" id="partSelect">
+          <button data-part="1" class="active">Part 1</button>
+          <button data-part="2">Part 2 (Cue Card)</button>
+          <button data-part="3">Part 3</button>
+        </div>
+
+        <div class="field">
+          <label class="big" for="speakingPrompt">Question / cue card topic</label>
+          <textarea id="speakingPrompt" placeholder="e.g. 'Describe a skill you would like to learn. You should say...'" style="min-height:70px;"></textarea>
+        </div>
+
+        <div class="mic-row">
+          <button class="mic-btn" id="micBtn"><span class="mic-dot"></span><span id="micBtnLabel">Start Recording</span></button>
+          <span class="mic-status" id="micStatus">Mic recording uses your browser's speech recognition — if unavailable, just type your answer below.</span>
+        </div>
+
+        <div class="field">
+          <label class="big" for="speakingTranscript">Transcript of your answer</label>
+          <textarea id="speakingTranscript" class="essay-box" placeholder="Your spoken answer will appear here as you record, or type/paste it directly."></textarea>
+          <div class="meta-row">
+            <span class="word-count" id="speakingWordCount">0 words</span>
+          </div>
+        </div>
+
+        <button class="evaluate-btn" id="evaluateSpeakingBtn">Evaluate Speaking</button>
+        <div class="loading-row hidden" id="speakingLoading"><div class="spinner"></div> Marking your response…</div>
+        <div class="error-box hidden" id="speakingError"></div>
+
+        <div class="results hidden" id="speakingResults"></div>
+      </div>
+
+      <div class="paper">
+        <h2 style="font-size:16px;">Recent Speaking Evaluations</h2>
+        <div class="history" id="speakingHistory"><p class="history-empty">No evaluations yet.</p></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>IELTS Practice Centre — practice tool, band scores are AI estimates, not official IELTS results.</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  let currentUser = null;
+  let authMode = "login";
+  let selectedWritingTask = "1";
+  let selectedSpeakingPart = "1";
+  let recognition = null;
+  let isRecording = false;
+
+  // ---------------- API helpers ----------------
+  async function api(path, opts){
+    const res = await fetch(path, opts);
+    let data;
+    try{ data = await res.json(); }catch(e){ data = {}; }
+    if(!res.ok){ throw new Error(data.error || ('Request failed (' + res.status + ')')); }
+    return data;
+  }
+
+  // ---------------- Auth ----------------
+  const loginScreen = document.getElementById('loginScreen');
+  const appScreen = document.getElementById('appScreen');
+  const modeLoginBtn = document.getElementById('modeLoginBtn');
+  const modeRegisterBtn = document.getElementById('modeRegisterBtn');
+  const authForm = document.getElementById('authForm');
+  const authSubmitBtn = document.getElementById('authSubmitBtn');
+  const authError = document.getElementById('authError');
+  const formTitle = document.getElementById('formTitle');
+
+  function setAuthMode(mode){
+    authMode = mode;
+    modeLoginBtn.classList.toggle('active', mode === 'login');
+    modeRegisterBtn.classList.toggle('active', mode === 'register');
+    authSubmitBtn.textContent = mode === 'login' ? 'Sign In' : 'Create Account';
+    formTitle.textContent = mode === 'login' ? 'Sign In' : 'Register';
+    authError.textContent = '';
+  }
+  modeLoginBtn.addEventListener('click', () => setAuthMode('login'));
+  modeRegisterBtn.addEventListener('click', () => setAuthMode('register'));
+
+  authForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    authError.textContent = '';
+    const username = document.getElementById('usernameInput').value.trim();
+    const password = document.getElementById('passwordInput').value;
+    if(!username || !password){ authError.textContent = 'Enter a candidate name and password.'; return; }
+
+    authSubmitBtn.disabled = true;
+    try{
+      const data = await api('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: authMode, username, password })
+      });
+      currentUser = data.username;
+      enterApp();
+    }catch(err){
+      authError.textContent = err.message;
+    }
+    authSubmitBtn.disabled = false;
+  });
+
+  function enterApp(){
+    loginScreen.classList.add('hidden');
+    appScreen.classList.remove('hidden');
+    document.getElementById('userDisplay').textContent = currentUser;
+    loadHistory('writing');
+    loadHistory('speaking');
+  }
+
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    currentUser = null;
+    appScreen.classList.add('hidden');
+    loginScreen.classList.remove('hidden');
+    authForm.reset();
+    setAuthMode('login');
+  });
+
+  // ---------------- Tab navigation ----------------
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab + 'Panel').classList.add('active');
+    });
+  });
+
+  document.querySelectorAll('#taskSelect button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#taskSelect button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedWritingTask = btn.dataset.task;
+      document.getElementById('writingTarget').textContent = 'Target: ' + (selectedWritingTask === '1' ? '150+' : '250+') + ' words';
+      updateWordCount('essayText', 'writingWordCount', selectedWritingTask === '1' ? 150 : 250);
+    });
+  });
+  document.querySelectorAll('#partSelect button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#partSelect button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedSpeakingPart = btn.dataset.part;
+    });
+  });
+
+  function updateWordCount(textareaId, labelId, target){
+    const text = document.getElementById(textareaId).value.trim();
+    const count = text ? text.split(/\s+/).length : 0;
+    const el = document.getElementById(labelId);
+    el.textContent = count + ' words';
+    el.classList.remove('short','ok');
+    if(target){ el.classList.add(count >= target ? 'ok' : 'short'); }
+  }
+  document.getElementById('essayText').addEventListener('input', () =>
+    updateWordCount('essayText', 'writingWordCount', selectedWritingTask === '1' ? 150 : 250));
+  document.getElementById('speakingTranscript').addEventListener('input', () =>
+    updateWordCount('speakingTranscript', 'speakingWordCount', null));
+
+  // ---------------- Speech recognition ----------------
+  const micBtn = document.getElementById('micBtn');
+  const micBtnLabel = document.getElementById('micBtnLabel');
+  const micStatus = document.getElementById('micStatus');
+  const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if(!SpeechRecognitionAPI){
+    micStatus.textContent = "Speech recognition isn't available in this browser — type or paste your answer below instead.";
+    micBtn.disabled = true;
+    micBtn.style.opacity = 0.5;
+  } else {
+    recognition = new SpeechRecognitionAPI();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+
+    let finalTranscript = '';
+    recognition.addEventListener('start', () => {
+      finalTranscript = document.getElementById('speakingTranscript').value;
+      if(finalTranscript && !finalTranscript.endsWith(' ')) finalTranscript += ' ';
+    });
+    recognition.addEventListener('result', (event) => {
+      let interim = '';
+      for(let i = event.resultIndex; i < event.results.length; i++){
+        const t = event.results[i][0].transcript;
+        if(event.results[i].isFinal){ finalTranscript += t + ' '; } else { interim += t; }
+      }
+      document.getElementById('speakingTranscript').value = (finalTranscript + interim).trim();
+      updateWordCount('speakingTranscript', 'speakingWordCount', null);
+    });
+    recognition.addEventListener('error', (e) => {
+      micStatus.textContent = 'Mic error: ' + e.error + '. You can still type your answer.';
+      stopRecording();
+    });
+    recognition.addEventListener('end', () => { if(isRecording){ stopRecording(); } });
+  }
+
+  function startRecording(){
+    if(!recognition) return;
+    try{
+      recognition.start();
+      isRecording = true;
+      micBtn.classList.add('recording');
+      micBtnLabel.textContent = 'Stop Recording';
+      micStatus.textContent = 'Listening… speak your answer.';
+    }catch(e){ micStatus.textContent = 'Could not start the mic. Type your answer instead.'; }
+  }
+  function stopRecording(){
+    if(recognition){ try{ recognition.stop(); }catch(e){} }
+    isRecording = false;
+    micBtn.classList.remove('recording');
+    micBtnLabel.textContent = 'Start Recording';
+    micStatus.textContent = 'Recording stopped. Review or edit the transcript below.';
+  }
+  micBtn.addEventListener('click', () => { isRecording ? stopRecording() : startRecording(); });
+
+  // ---------------- Evaluation (calls our own backend, never Gemini directly) ----------------
+  function renderResults(containerId, taskLabel, data){
+    const container = document.getElementById(containerId);
+    const maxScore = 9;
+    let criteriaHtml = data.criteria.map(c => `
+      <div class="criterion">
+        <div class="cname">${escapeHtml(c.name)}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${(c.score/maxScore*100).toFixed(0)}%"></div></div>
+        <div class="cscore">${c.score}</div>
+        <div class="ccomment">${escapeHtml(c.comment)}</div>
+      </div>`).join('');
+
+    let strengthsHtml = data.strengths.map(s => `<li>${escapeHtml(s)}</li>`).join('');
+    let improveHtml = data.improvements.map(s => `<li>${escapeHtml(s)}</li>`).join('');
+
+    container.innerHTML = `
+      <div class="result-head">
+        <div class="band-stamp animate">
+          <span class="label">Band</span>
+          <span class="num">${data.overall}</span>
+          <span class="task">${escapeHtml(taskLabel)}</span>
+        </div>
+        <div class="result-head-text">
+          <h3>Examiner Summary</h3>
+          <p>Overall band ${data.overall} — see the breakdown below for how each criterion was scored.</p>
+        </div>
+      </div>
+      <div class="criteria-list">${criteriaHtml}</div>
+      <div class="feedback-grid">
+        <div class="feedback-col strengths"><h4>Strengths</h4><ul>${strengthsHtml}</ul></div>
+        <div class="feedback-col improve"><h4>To Improve</h4><ul>${improveHtml}</ul></div>
+      </div>
+      ${taskLabel.toLowerCase().includes('speaking') ? '<div class="caveat">Pronunciation is estimated from the text transcript only — it cannot capture actual sound production, so treat that score as a rough guide, not a substitute for a spoken assessment.</div>' : ''}
+    `;
+    container.classList.remove('hidden');
+  }
+
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
+  async function loadHistory(type){
+    const el = document.getElementById(type + 'History');
+    try{
+      const data = await api('/api/history?type=' + type + '&username=' + encodeURIComponent(currentUser), { method: 'GET' });
+      const list = data.history || [];
+      if(!list.length){ el.innerHTML = '<p class="history-empty">No evaluations yet.</p>'; return; }
+      el.innerHTML = list.slice(-5).reverse().map(item => `
+        <div class="history-item">
+          <span>${escapeHtml(item.label)} — ${escapeHtml(item.date)}</span>
+          <b>Band ${item.overall}</b>
+        </div>`).join('');
+    }catch(e){ el.innerHTML = '<p class="history-empty">Couldn\'t load history.</p>'; }
+  }
+
+  document.getElementById('evaluateWritingBtn').addEventListener('click', async () => {
+    const prompt = document.getElementById('writingPrompt').value.trim();
+    const essay = document.getElementById('essayText').value.trim();
+    const errBox = document.getElementById('writingError');
+    const loadRow = document.getElementById('writingLoading');
+    errBox.classList.add('hidden');
+    document.getElementById('writingResults').classList.add('hidden');
+
+    if(essay.split(/\s+/).filter(Boolean).length < 20){
+      errBox.textContent = 'Write a fuller response before requesting an evaluation (at least ~20 words).';
+      errBox.classList.remove('hidden');
+      return;
+    }
+
+    const btn = document.getElementById('evaluateWritingBtn');
+    btn.disabled = true;
+    loadRow.classList.remove('hidden');
+    try{
+      const data = await api('/api/evaluate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'writing', task: selectedWritingTask, prompt, text: essay, username: currentUser })
+      });
+      renderResults('writingResults', 'Task ' + selectedWritingTask, data.result);
+      loadHistory('writing');
+    }catch(e){
+      errBox.textContent = 'Evaluation failed: ' + e.message;
+      errBox.classList.remove('hidden');
+    }
+    loadRow.classList.add('hidden');
+    btn.disabled = false;
+  });
+
+  document.getElementById('evaluateSpeakingBtn').addEventListener('click', async () => {
+    if(isRecording) stopRecording();
+    const prompt = document.getElementById('speakingPrompt').value.trim();
+    const transcript = document.getElementById('speakingTranscript').value.trim();
+    const errBox = document.getElementById('speakingError');
+    const loadRow = document.getElementById('speakingLoading');
+    errBox.classList.add('hidden');
+    document.getElementById('speakingResults').classList.add('hidden');
+
+    if(transcript.split(/\s+/).filter(Boolean).length < 15){
+      errBox.textContent = 'Record or type a fuller answer before requesting an evaluation (at least ~15 words).';
+      errBox.classList.remove('hidden');
+      return;
+    }
+
+    const btn = document.getElementById('evaluateSpeakingBtn');
+    btn.disabled = true;
+    loadRow.classList.remove('hidden');
+    try{
+      const data = await api('/api/evaluate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'speaking', task: selectedSpeakingPart, prompt, text: transcript, username: currentUser })
+      });
+      renderResults('speakingResults', 'Speaking Part ' + selectedSpeakingPart, data.result);
+      loadHistory('speaking');
+    }catch(e){
+      errBox.textContent = 'Evaluation failed: ' + e.message;
+      errBox.classList.remove('hidden');
+    }
+    loadRow.classList.add('hidden');
+    btn.disabled = false;
+  });
+
+  updateWordCount('essayText', 'writingWordCount', 150);
+  updateWordCount('speakingTranscript', 'speakingWordCount', null);
+})();
+</script>
+</body>
+</html>
